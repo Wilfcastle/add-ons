@@ -1,0 +1,52 @@
+<<
+--[[
+detect_faction will help determine the faction of a side.
+Specifically, this script will detect the faction of the player taking their turn.
+This script must be used in an event of name=side turn.
+
+This script was pilfered from data/multiplayer/scenarios/2p_Hornshark_Island_lua and used in .cfg
+
+]]
+    local factions = wesnoth.get_variable("factions")
+    local function detect_faction(side_number)
+        local helper = wesnoth.require("lua/helper.lua")
+        
+        -- For all factions, try and match the recruits and leaders of the chosen side.
+        
+        for multiplayer_side in helper.child_range(factions, "multiplayer_side") do
+            local function recruits_match()
+                local count = 0
+                for searched in string.gmatch(multiplayer_side.recruit, "[^%s,][^,]*") do
+                    count = count + 1
+                    local found = false
+                    for i, actual in ipairs(wesnoth.sides[side_number].recruit) do
+                        if searched == actual then
+                            found = true
+                            break
+                        end
+                    end
+                    if not found then return false end
+                end
+                return count == #wesnoth.sides[side_number].recruit
+            end
+            local function leader_matches()
+                local actual = wesnoth.get_units({ canrecruit = true, side = side_number })[1]
+                for searched in string.gmatch(multiplayer_side.leader, "[^%s,][^,]*") do
+                    if searched == actual.type then return true end
+                end
+            end
+            if recruits_match() and leader_matches() then
+                wesnoth.set_variable("p" .. tostring(side_number) .. "_faction_id", multiplayer_side.id)
+                wesnoth.set_variable("p" .. tostring(side_number) .. "_faction_music", multiplayer_side.music)
+                return
+            end
+        end
+    end
+    
+    -- TODO: Determine the number of players and loop over that number.
+    detect_faction(1)
+    detect_faction(2)
+    detect_faction(3)
+    detect_faction(4)
+
+>>
