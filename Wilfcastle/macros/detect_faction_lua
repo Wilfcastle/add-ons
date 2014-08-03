@@ -42,11 +42,6 @@ This script was pilfered from data/multiplayer/scenarios/2p_Hornshark_Island_lua
             end
         end
     end
-    
-    -- TODO: Determine the number of players and loop over that number.
-    detect_faction(1)
-    detect_faction(2)
-    detect_faction(3)
-    detect_faction(4)
+   
 
 >>
