@@ -10,6 +10,7 @@ This script was pilfered from data/multiplayer/scenarios/2p_Hornshark_Island_lua
     local factions = wesnoth.get_variable("factions")
     local function detect_faction(side_number)
         local helper = wesnoth.require("lua/helper.lua")
+        local side_to_faction = helper.get_variable_array("side_to_faction")
         
         -- For all factions, try and match the recruits and leaders of the chosen side.
         
@@ -38,10 +39,19 @@ This script was pilfered from data/multiplayer/scenarios/2p_Hornshark_Island_lua
             if recruits_match() and leader_matches() then
                 wesnoth.set_variable("p" .. tostring(side_number) .. "_faction_id", multiplayer_side.id)
                 wesnoth.set_variable("p" .. tostring(side_number) .. "_faction_music", multiplayer_side.music)
+                
+                -- Doesn't work.
+                -- side_to_faction[side_number].id = multiplayer_side.id
+                -- side_to_faction[side_number].music = multiplayer_side.music
                 return
             end
         end
     end
-   
+
+-- Iterate over each player and detect their faction.
+local helper = wesnoth.require("lua/helper.lua")
+for team in helper.all_teams() do 
+    detect_faction(team.side) 
+end
 
 >>
